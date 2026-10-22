@@ -1,0 +1,13 @@
+{
+  "name": "saathi-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Optional real-browser check for Saathi. Not needed to run the demo.",
+  "scripts": {
+    "test": "node browser-flow.mjs",
+    "demo": "node demo-driver.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  }
+}

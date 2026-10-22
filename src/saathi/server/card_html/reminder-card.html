@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reminder</title>
+<style>
+  body { margin: 0; font: 20px/1.4 system-ui, "Segoe UI", sans-serif; color: #1f2a1f; background: transparent; }
+  .card { background: #fff8ec; border: 2px solid #e6c98f; border-radius: 16px; padding: 16px 20px; }
+  .label { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: #8a6420; font-weight: 700; }
+  .text { font-size: 26px; font-weight: 700; margin: 6px 0 4px; }
+  .when { font-size: 20px; color: #4b3a1a; }
+  .muted { color: #776; font-size: 16px; }
+</style>
+</head>
+<body>
+<div class="card" id="card"><div class="muted">Loading…</div></div>
+<!--CARD_RUNTIME-->
+<script>
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  function spoken(hhmm) {
+    if (!hhmm) return "";
+    const [h, m] = hhmm.split(":").map(Number);
+    if (h === 12 && m === 0) return "12 noon";
+    const h12 = h % 12 || 12;
+    const base = m === 0 ? `${h12}` : `${h12}:${String(m).padStart(2, "0")}`;
+    const period = h >= 5 && h < 12 ? "in the morning" : h < 17 && h >= 12 ? "in the afternoon" : h >= 17 && h < 21 ? "in the evening" : "at night";
+    return `${base} ${period}`;
+  }
+  window.McpCard.onData(({ data }) => {
+    if (!data) return;
+    const raw = data.when_text || (data.recurrence === "daily" ? `every day at ${spoken(data.time)}` : `at ${spoken(data.time)}`);
+    const when = raw.charAt(0).toUpperCase() + raw.slice(1);
+    document.getElementById("card").innerHTML = `
+      <div class="label">⏰ Reminder set</div>
+      <div class="text">${esc(data.text)}</div>
+      <div class="when">${esc(when)}</div>`;
+  });
+</script>
+</body>
+</html>

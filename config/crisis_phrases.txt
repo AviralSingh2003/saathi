@@ -1,0 +1,44 @@
+# Layer 1 of emergency detection: checked instantly, BEFORE any model sees the person's words,
+# and the only layer offline. In live mode a Haiku check (host/emergency.py) catches what this
+# list misses: indirect wording, context, other languages.
+# Format: reason_code: regular expression (case-insensitive, matched anywhere).
+# reason_code is one of: medical_emergency, self_harm, asked_for_help
+# Order matters: the first matching line wins.
+
+self_harm: \b(kill|hurt|harm)\s+myself\b
+self_harm: \bend\s+(it\s+all|my\s+life)\b
+self_harm: \bwant\s+to\s+die\b
+self_harm: \bdon'?t\s+want\s+to\s+(live|be\s+here)\b
+self_harm: \bno\s+(point|reason)\s+(in\s+)?living\b
+self_harm: \bbetter\s+off\s+without\s+me\b
+self_harm: \bsuicid
+self_harm: \bmarna\s+chahti?\b
+
+# heart
+medical_emergency: \bheart\s+attack\b
+medical_emergency: \bchest\s+(pain|hurts?|feels?\s+(tight|heavy)|is\s+(tight|heavy)|pressure|tightness)\b
+medical_emergency: \b(pain|tightness|pressure)\s+in\s+my\s+chest\b
+medical_emergency: \bseene\s+(mein|me)\s+dard\b
+# stroke signs (face, arm, speech)
+medical_emergency: \b(arm|leg|face|hand|side)\s+(has\s+)?(gone|is|went|feels?)\s+(numb|weak|dead)\b
+medical_emergency: \bcan'?t\s+(feel|move)\s+my\s+(arm|leg|face|hand|side)\b
+medical_emergency: \b(face|mouth)\s+(is\s+)?droop
+medical_emergency: \b(speech|words)\s+(is|are)\s+slurr|\bslurring\b
+# breathing, falls, collapse
+medical_emergency: \bcan'?t\s+(get\s+up|breathe|catch\s+my\s+breath)\b
+medical_emergency: \bcannot\s+(get\s+up|breathe)\b
+medical_emergency: \bi(\s*'ve|\s+have)?\s+fallen\b
+medical_emergency: \bi\s+fell\b(?!\s+(asleep|for|in\s+love|behind))
+medical_emergency: \b(collapsed|fainted|passed\s+out|unconscious|not\s+breathing)\b
+medical_emergency: \bi('m|\s+am)\s+bleeding\b
+# poisoning, overdose
+medical_emergency: \btook\s+(all|too\s+many)\s+(of\s+)?my\s+(tablets|pills|medicine)\b|\boverdose\b
+# explicit
+medical_emergency: \bcall\s+(an\s+)?ambulance\b|\bcall\s+(911|112|999|108|102)\b
+medical_emergency: \b(it'?s|this\s+is)\s+an\s+emergency\b
+
+asked_for_help: \bi\s+need\s+help\b
+asked_for_help: \bplease\s+help(\s+me)?\b
+asked_for_help: \bhelp\s+me\s+please\b
+asked_for_help: \bmadad\s+karo\b|\bbachao\b
+asked_for_help: \bcall\s+(priya|my\s+(daughter|son|family)|someone)\s+now\b

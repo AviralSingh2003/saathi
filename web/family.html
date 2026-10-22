@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saathi — family view</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%277%27 fill=%27%23f0b54a%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+</head>
+<body class="family">
+  <header class="topbar">
+    <div class="brand"><span class="logo" aria-hidden="true">◐</span><span class="name">Saathi · Family</span></div>
+    <div class="sim-label">This page is a direct MCP client (Streamable HTTP)</div>
+    <div class="topbar-right"><a id="phone-link" class="phone-link" href="inbox.html">Their phone: texts &amp; emails →</a></div>
+  </header>
+  <script>
+    // Open the phone view for the same family member (family.js puts the token in the URL).
+    document.getElementById("phone-link").addEventListener("click", (e) => {
+      e.preventDefault();
+      location.href = "inbox.html" + location.search;
+    });
+  </script>
+
+  <main class="family-main">
+    <section>
+      <div id="dashboard" class="card-stack"><p class="muted">Connecting…</p></div>
+    </section>
+    <section class="note-box">
+      <h2 id="note-title">Leave a message</h2>
+      <form id="note-form">
+        <textarea id="note-text" rows="3" maxlength="500" placeholder="They'll hear it at their next check-in, or sooner if they ask for messages."></textarea>
+        <button type="submit">Send message</button>
+      </form>
+      <p id="note-status" class="muted"></p>
+    </section>
+  </main>
+
+  <details class="inspector-panel" open>
+    <summary>MCP inspector <span class="muted">(this page's JSON-RPC session)</span></summary>
+    <div id="inspector" class="inspector"></div>
+  </details>
+  <script type="module" src="family.js"></script>
+</body>
+</html>

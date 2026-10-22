@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saathi"
+version = "0.1.0"
+description = "Saathi: an ambient voice companion (simulated Alexa+ experience) that keeps isolated older people connected to their family."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+  # mcp is pinned to the 2.1.x line because strands-agents 1.60 requires mcp<2.2.
+  # 2.1.1 negotiates protocol version 2025-11-25 and ships the MCP Apps extension.
+  "mcp==2.1.1",
+  "strands-agents==1.60.0",
+  "boto3>=1.35",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.28"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+saathi = ["server/card_html/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning"]

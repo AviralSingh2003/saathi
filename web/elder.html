@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saathi — simulated Alexa+ experience</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%277%27 fill=%27%23f0b54a%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+</head>
+<body class="elder">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◐</span>
+      <span class="name">Saathi</span>
+    </div>
+    <div class="sim-label" title="This is a simulation of an Alexa+ experience. The Saathi MCP server is real and self-hosted.">
+      Simulated Alexa+ experience · self-hosted MCP server
+    </div>
+    <div class="topbar-right">
+      <span class="clock" id="clock" title="Simulated time">--:--</span>
+      <label class="speaker">Who's speaking?
+        <select id="speaker"></select>
+      </label>
+    </div>
+  </header>
+
+  <main class="screen">
+    <section class="conversation" aria-live="polite" aria-label="Conversation">
+      <div id="logs"></div>
+    </section>
+    <section class="cards" aria-label="Cards">
+      <h2 class="cards-title">On screen</h2>
+      <div id="cards"></div>
+    </section>
+  </main>
+
+  <footer class="controls">
+    <button id="talk" class="talk" type="button" aria-pressed="false">
+      <span class="mic" aria-hidden="true">🎤</span> <span id="talk-label">Tap to talk</span>
+    </button>
+    <form id="typed" class="typed" autocomplete="off">
+      <input id="typed-input" type="text" placeholder="…or type here" aria-label="Type a message">
+      <button type="submit">Send</button>
+    </form>
+    <label class="handsfree"><input id="handsfree" type="checkbox"> Listen after questions</label>
+  </footer>
+
+  <details class="inspector-panel" id="inspector-panel">
+    <summary>MCP inspector <span class="muted">(live JSON-RPC: browser session + host agent)</span></summary>
+    <div id="inspector" class="inspector"></div>
+  </details>
+
+  <div id="devbar" class="devbar" hidden>
+    <strong>Demo clock</strong>
+    <button data-advance="15">+15 min</button>
+    <button data-advance="60">+1 hour</button>
+    <input id="set-time" type="time" aria-label="Set simulated time">
+    <button id="set-time-btn">Go</button>
+    <button id="poll-now">Check now</button>
+    <span class="muted">Press D to hide</span>
+  </div>
+
+  <div id="status" class="status" role="status"></div>
+  <script type="module" src="elder.js"></script>
+</body>
+</html>

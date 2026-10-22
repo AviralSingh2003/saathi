@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saathi — family member's phone</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%277%27 fill=%27%23f0b54a%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+</head>
+<body class="phone-page">
+  <header class="topbar">
+    <div class="brand"><span class="logo" aria-hidden="true">◐</span><span class="name">Saathi · <span id="who">Family</span>'s phone</span></div>
+    <div class="sim-label" id="delivery-label">What Saathi sent them</div>
+    <div class="topbar-right"><a id="back-link" class="phone-link" href="family.html">← Family page</a></div>
+  </header>
+
+  <main class="phone-wrap">
+    <div class="phone" role="application" aria-label="Phone">
+      <div class="phone-status"><span id="phone-time">--:--</span><span>●●●● 5G</span></div>
+      <nav class="phone-tabs" role="tablist">
+        <button role="tab" id="tab-texts" class="active" aria-selected="true">Messages <span class="badge" id="badge-texts" hidden></span></button>
+        <button role="tab" id="tab-mail" aria-selected="false">Mail <span class="badge" id="badge-mail" hidden></span></button>
+      </nav>
+      <section id="texts" class="phone-pane active" aria-label="Text messages"></section>
+      <section id="mail" class="phone-pane" aria-label="Email inbox"></section>
+      <article id="reader" class="phone-pane reader" hidden></article>
+    </div>
+    <p class="phone-note muted" id="phone-note"></p>
+  </main>
+  <script type="module" src="inbox.js"></script>
+</body>
+</html>
