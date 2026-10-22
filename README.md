@@ -25,6 +25,9 @@ cd saathi
 .\demo.ps1           # Windows PowerShell
 ```
 
+If Windows blocks the script ("running scripts is disabled on this system"), run
+`powershell -ExecutionPolicy Bypass -File .\demo.ps1` instead.
+
 First run creates `.venv` and installs dependencies. Then it seeds demo data, starts the MCP
 server (`:8765/mcp`) and the host (`:8080`), and opens two tabs:
 
@@ -124,35 +127,76 @@ service in behind the same interface, the way Alexa Emergency Assist connects to
 
 ## Live mode (Bedrock + SES + SNS)
 
-Full walkthrough: **[docs/aws-setup-guide.md](docs/aws-setup-guide.md)**. It covers IAM, the Anthropic
-use-case form, inference profile IDs, SES and SNS sandboxes, budgets, and troubleshooting. In short, copy
-`.env.example` to `.env` and set:
+**The offline demo needs no `.env` file.** Without one, Saathi runs in offline mode (`MOCK=1` is the default).
+You only need a `.env` for live mode.
 
+Full walkthrough: **[docs/aws-setup-guide.md](docs/aws-setup-guide.md)**. It covers IAM, the Anthropic
+use-case form, inference profile IDs, SES and SNS sandboxes, budgets, and troubleshooting. In short:
+
+**1. AWS credentials.** These go in the AWS CLI's own config, never in `.env` or the repo:
+
+```bash
+aws configure                       # access key, secret, region us-east-1
+# or, for a named profile:  aws configure --profile saathi   (then set AWS_PROFILE=saathi below)
 ```
+
+**2. Create `.env`** in the `saathi` folder from the template. It's gitignored.
+
+```bash
+cp .env.example .env                # Windows PowerShell: Copy-Item .env.example .env
+```
+
+**3. Edit `.env`.** Every setting is explained in [`.env.example`](.env.example). For live mode, set:
+
+```ini
 MOCK=0
+# AWS_PROFILE=saathi              # only if you used a named profile in step 1
 AWS_REGION=us-east-1
 BEDROCK_MODEL_ID=us.anthropic.claude-haiku-4-5-20251001-v1:0
+
+# Email, option A: Amazon SES
 SES_SENDER=<an SES-verified sender address>
-PRIYA_EMAIL=<an SES-verified recipient (required while SES is in sandbox)>
+PRIYA_EMAIL=<the family inbox; SES-verified while SES is in its sandbox>
+
+# Email, option B: SMTP, e.g. Gmail, when SES isn't available (leave SES_SENDER empty)
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=you@gmail.com
+# SMTP_PASSWORD=<16-character Gmail App password; needs 2-Step Verification>
+
+# Texts: Amazon SNS (0 = shown on the /phone page and in outbox/ only)
 SMS_ENABLED=1
 PRIYA_PHONE=<an SNS-verified number in E.164, e.g. +9198…>
-EMERGENCY_NUMBER=112            # or 911, 999…
+
+EMERGENCY_NUMBER=112              # named in messages: 112 India/EU, 911 US, 999 UK
 ```
 
-Then run `python scripts/check_aws.py` (add `--send-test` to send one real email and one real text). If
-Bedrock is unavailable mid-session, the host falls back to the deterministic router, and the instant phrase
-check still protects every message.
+**4. Check, then restart:**
 
-**Email without SES.** Some AWS accounts (e.g. the new Free plan) can't use SES or SMS. Leave `SES_SENDER`
-empty and set `SMTP_HOST`, `SMTP_USER` and `SMTP_PASSWORD`. For Gmail, that's `smtp.gmail.com` and an App
-password. Saathi then emails through SMTP instead. The order is SES, then SMTP, then outbox copies only. A
-copy of every email and text is always kept in `outbox/`, and `/phone` shows them.
+```bash
+.venv/bin/python scripts/check_aws.py              # Windows: .venv\Scripts\python scripts\check_aws.py
+.venv/bin/python scripts/check_aws.py --send-test  # also sends one real email (and a text if SMS_ENABLED=1)
+./demo.sh                                          # Windows: .\demo.ps1; it re-seeds with your PRIYA_EMAIL / PRIYA_PHONE
+```
+
+The console prints whether it's running LIVE or offline. Real environment variables override `.env`.
+Set `MOCK=1` to go back to offline mode.
+
+Email goes through SES first, then SMTP, then an outbox copy only. Some AWS accounts (e.g. the new Free
+plan) can't use SES or SMS, which is why SMTP is there. A copy of every email and text is always kept in
+`outbox/`, and `/phone` shows them. If Bedrock is unavailable mid-session, the host falls back to the
+deterministic router, and the instant phrase check still protects every message.
 
 ## Tests
 
 ```bash
 .venv/bin/python -m pytest          # (Windows: .venv\Scripts\python -m pytest) — all offline, about 90 s
-cd e2e && npm install && npm test   # optional: real-browser run (installed Chrome/Edge), demo must be running
+
+# optional: real-browser run (Node.js 22+, installed Chrome/Edge)
+cd e2e
+npm install
+npm test                            # start the demo first (./demo.sh); this checks the full flow against it
+npm run demo                        # scripted video walkthrough; starts its own Saathi (stop the demo first)
 ```
 
 The Python suite covers:
@@ -176,7 +220,7 @@ src/saathi/core/     state + rules: memory, reflection, impressions, engagement,
                      family loop, notify (SES + SNS), escalation, dispatch (simulated)
 src/saathi/host/     simulated Alexa+: Strands agent, MockModel, emergency phrase list + Haiku check, WebSocket bridge
 skills/              Agent Skill (SKILL.md + references)
-web/                 elder + family pages; web/vendor = built bundles from mcp-voice-sim
+web/                 elder, family and phone pages; web/vendor = built bundles from mcp-voice-sim
 scripts/             demo, seed, simulate_day, show_memory, wipe, check_aws
 tests/, e2e/         pytest suite; optional browser run
 docs/                architecture, AWS integration and setup, demo script, friction log, product feedback
@@ -213,8 +257,8 @@ npm test
 npm run vendor -- ../saathi/web/vendor      # copies both bundles and writes VERSION
 ```
 
-Then reload the Saathi pages (Ctrl+Shift+R). No restart is needed: the host serves `web/` as static files.
-Commit the updated `web/vendor/` files in Saathi so the repo stays self-contained.
+Then restart the Saathi demo (Ctrl+C, then `./demo.sh` again). The MCP server inlines `card-runtime.js` into
+the cards when it starts. Commit the updated `web/vendor/` files in Saathi so the repo stays self-contained.
 
 ## License
 
